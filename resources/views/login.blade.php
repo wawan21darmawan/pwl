@@ -9,27 +9,24 @@
     
     <style>
         body {
-            /* GANTI LINK GAMBAR DI SINI */
             background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20230705/pngtree-d-render-of-snooker-table-billiards-ball-and-player-under-dim-image_3821892.jpg");
-            
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;
             background-attachment: fixed;
-            background-color: #0f172a; /* Warna cadangan jika gambar gagal */
+            background-color: #0f172a;
         }
 
-        /* Lapisan hitam transparan supaya tulisan jelas */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.6); /* Semakin besar angkanya (0.6), semakin gelap */
+            background: rgba(0, 0, 0, 0.6);
             z-index: -1;
         }
 
         .card {
-            background-color: rgba(33, 37, 41, 0.85); /* Transparan dikit */
+            background-color: rgba(33, 37, 41, 0.85);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -49,20 +46,38 @@
                             <p class="text-white-50 small">Member Login</p>
                         </div>
 
-                        <form method="POST" action="/login">
+                        {{-- Menampilkan Pesan Error --}}
+                        @if ($errors->any())
+                            <div class="alert alert-danger py-2 small">
+                                <ul class="mb-0 ps-3">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <form method="POST" action="{{ route('login') }}">
                             @csrf
+                            
+                            {{-- Input Username --}}
                             <div class="form-floating mb-3">
-                                <input type="text" name="nama" class="form-control" id="nama" placeholder="Nama" required>
-                                <label for="nama">Nama Lengkap</label>
+                                <input type="text" name="username" class="form-control bg-dark text-white border-secondary" id="username" placeholder="Username" required autofocus>
+                                <label class="text-secondary" for="username">Username</label>
                             </div>
+
+                            {{-- Input Password --}}
                             <div class="form-floating mb-3">
-                                <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
-                                <label for="password">Password</label>
+                                <input type="password" name="password" class="form-control bg-dark text-white border-secondary" id="password" placeholder="Password" required>
+                                <label class="text-secondary" for="password">Password</label>
                             </div>
+
+                            {{-- Input No Telp (DIKEMBALIKAN) --}}
                             <div class="form-floating mb-4">
-                                <input type="text" name="no_telp" class="form-control" id="notelp" placeholder="No Telp" required>
-                                <label for="notelp">No. Telepon</label>
+                                <input type="text" name="no_telp" class="form-control bg-dark text-white border-secondary" id="no_telp" placeholder="08xxx" required>
+                                <label class="text-secondary" for="no_telp">No. Telepon</label>
                             </div>
+
                             <div class="d-grid mb-3">
                                 <button type="submit" class="btn btn-primary btn-lg fw-bold">MASUK</button>
                             </div>

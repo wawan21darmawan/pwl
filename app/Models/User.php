@@ -9,39 +9,29 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    // --- TAMBAHKAN BAGIAN INI ---
+    protected $table = 'pengguna';      // Nama tabel di database kamu
+    protected $primaryKey = 'id_pengguna'; // Nama primary key kamu
+    public $timestamps = false;         // Karena di tabel pengguna tidak ada created_at & updated_at
+    // ----------------------------
+
     protected $fillable = [
-        'name',
-        'email',
+        'username', // Sesuaikan dengan kolom database
         'password',
+        'no_telp',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    // Hapus method casts() jika membuat error, atau biarkan default
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

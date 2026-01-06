@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Pembayaran</title>
+    <title>Pembayaran | Billiard Five Corner</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -45,7 +45,7 @@
                                 <span class="fw-bold {{ $warnaTeks }}">{{ $tipeRuangan }}</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
-                                <span>Meja</span> <span class="fw-bold text-white">{{ sprintf('%02d', $meja) }}</span>
+                                <span>Meja</span> <span class="fw-bold text-white">No. {{ sprintf('%02d', $meja) }}</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Tanggal</span> <span class="fw-bold text-white">{{ \Carbon\Carbon::parse($tanggal_reservasi)->translatedFormat('d M Y') }}</span>
@@ -58,11 +58,30 @@
                             </li>
                         </ul>
 
+                        {{-- FORM UPDATE: Menambahkan Hidden Input & Pilihan Metode Pembayaran --}}
                         <form action="{{ route('pembayaran.konfirmasi') }}" method="POST">
                             @csrf
+                            
+                            {{-- PENTING: Data Hidden ini akan dikirim ke Database --}}
+                            <input type="hidden" name="id_meja" value="{{ $id_meja_asli }}">
+                            <input type="hidden" name="id_paket" value="{{ $id_paket }}">
+                            <input type="hidden" name="tanggal_reservasi" value="{{ $tanggal_reservasi }}">
+                            <input type="hidden" name="jam_mulai" value="{{ $jam_mulai }}">
+                            <input type="hidden" name="jam_selesai" value="{{ $jam_selesai }}">
                             <input type="hidden" name="total_bayar" value="{{ $totalHarga }}">
+
+                            {{-- Pilihan Metode Pembayaran (Sesuai Enum Database) --}}
+                            <div class="mb-3 text-start">
+                                <label class="text-secondary small ms-2 mb-1">Konfirmasi Metode Pembayaran</label>
+                                <select name="metode_pembayaran" class="form-select bg-dark text-white border-secondary rounded-pill mb-3">
+                                    <option value="QRIS" selected>QRIS (Scan di atas)</option>
+                                    <option value="Transfer">Transfer Bank</option>
+                                    <option value="E-Wallet">E-Wallet (OVO/DANA/GoPay)</option>
+                                </select>
+                            </div>
+
                             <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold py-2 mb-2">
-                                <i class="bi bi-check-circle me-1"></i> SAYA SUDAH BAYAR
+                                <i class="bi bi-check-circle me-1"></i> KONFIRMASI PEMBAYARAN
                             </button>
                             <a href="javascript:history.back()" class="btn btn-outline-secondary w-100 rounded-pill">Batal</a>
                         </form>
