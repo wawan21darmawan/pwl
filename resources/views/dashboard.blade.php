@@ -77,7 +77,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 border-secondary shadow card-hover">
                     <div class="position-relative">
-                        <img src="https://tse4.mm.bing.net/th/id/OIP.Lu_Q1GvIfmnz7PsKGxoBMwHaDt?pid=Api&h=220&P=0" class="card-img-top">
+                        <img src="{{ asset('image/vip-smoking.jpeg') }}" class="card-img-top w-100" alt="VIP Smoking">
                         <span class="position-absolute top-0 end-0 m-3 badge rounded-pill bg-primary">Rp40k /jam</span>
                     </div>
                     <div class="card-body d-flex flex-column">
@@ -99,7 +99,8 @@
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 border-secondary shadow card-hover">
                     <div class="position-relative">
-                        <img src="https://tse3.mm.bing.net/th/id/OIP.HGw4wTbLjDg1iMdoGCaa_QHaHa?pid=Api&h=220&P=0" class="card-img-top">
+            
+<img src="{{ asset('image/vip-non-smoking.jpeg') }}" class="card-img-top w-100" alt="VIP Non Smoking">
                         <span class="position-absolute top-0 end-0 m-3 badge rounded-pill bg-primary">Rp40k /jam</span>
                     </div>
                     <div class="card-body d-flex flex-column">

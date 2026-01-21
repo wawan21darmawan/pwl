@@ -11,7 +11,12 @@ class Meja extends Model
 
     protected $table = 'meja';
     protected $primaryKey = 'id_meja';
-    public $timestamps = false; // Karena di SQL tidak ada created_at/updated_at
+    public $timestamps = false; 
+    protected $guarded = [];
 
     protected $fillable = ['nomor_meja', 'id_kategori', 'status'];
+    public function kategori()
+    {
+        return $this->belongsTo(KategoriMeja::class, 'id_kategori', 'id_kategori');
+    }
 }

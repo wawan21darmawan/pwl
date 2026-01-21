@@ -62,27 +62,33 @@
         </div>
 
         <div class="row g-4 justify-content-center">
-            @for ($i = 1; $i <= 8; $i++)
-            <div class="col-md-3 col-6">
-                <div class="card card-meja rounded-4 overflow-hidden h-100">
-                    <div class="position-relative">
-                        <img src="https://i.pinimg.com/1200x/76/2c/34/762c345e7fa48bd5d614b50d0530089b.jpg" class="card-img-top w-100">
-                        <span class="position-absolute top-0 end-0 badge bg-info text-dark m-2 shadow fw-bold">VIP</span>
-                    </div>
-                    
-                    <div class="card-body text-center d-flex flex-column">
-                        <h5 class="fw-bold text-white mb-1">Meja {{ sprintf('%02d', $i) }}</h5>
-                        <p class="small text-secondary mb-3">Non-Smoking</p>
-                        
-                        <button class="btn btn-outline-info text-white w-100 mt-auto rounded-pill fw-bold"
-                            onclick="pilihMeja({{ $i }})">
-                            <i class="bi bi-bookmark-check me-1"></i> Booking VIP
-                        </button>
-                    </div>
-                </div>
+    @for ($i = 1; $i <= 8; $i++)
+        @php
+            $id_asli_database = $i + 20; 
+        @endphp
+
+    <div class="col-md-3 col-6">
+        <div class="card card-meja rounded-4 overflow-hidden h-100">
+            <div class="position-relative">
+                <img src="https://i.pinimg.com/1200x/76/2c/34/762c345e7fa48bd5d614b50d0530089b.jpg" class="card-img-top w-100">
+                <span class="position-absolute top-0 end-0 badge bg-info text-dark m-2 shadow fw-bold">VIP</span>
             </div>
-            @endfor
+            
+            <div class="card-body text-center d-flex flex-column">
+                {{-- TAMPILAN: Tetap Meja 1, 2, 3... --}}
+                <h5 class="fw-bold text-white mb-1">Meja {{ $i }}</h5>
+                <p class="small text-secondary mb-3">Non-Smoking</p>
+                
+                {{-- TOMBOL: Kirim ID 21, 22... ke server --}}
+                <button class="btn btn-outline-info text-white w-100 mt-auto rounded-pill fw-bold"
+                    onclick="pilihMeja({{ $id_asli_database }})">
+                    <i class="bi bi-bookmark-check me-1"></i> Booking VIP
+                </button>
+            </div>
         </div>
+    </div>
+    @endfor
+</div>
 
         <div class="card mt-5 rounded-4 glass-card d-none" id="bookingCard">
             <div class="card-body p-4 p-md-5">

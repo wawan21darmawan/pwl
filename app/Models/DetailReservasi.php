@@ -13,6 +13,11 @@ class DetailReservasi extends Model
     protected $primaryKey = 'id_detail';
     public $timestamps = false; 
 
+    public function meja()
+    {
+        return $this->belongsTo(Meja::class, 'id_meja', 'id_meja');
+    }
+
     protected $fillable = [
         'id_reservasi',
         'id_meja',

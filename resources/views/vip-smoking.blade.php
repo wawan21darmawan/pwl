@@ -62,27 +62,36 @@
         </div>
 
         <div class="row g-4 justify-content-center">
-            @for ($i = 1; $i <= 8; $i++)
-            <div class="col-md-3 col-6">
-                <div class="card card-meja rounded-4 overflow-hidden h-100">
-                    <div class="position-relative">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKtheZXZUbNXYtanyqZxyM9Pui5Bdu5EyPvg&s" class="card-img-top w-100">
-                        <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2 shadow fw-bold">VIP</span>
-                    </div>
-                    
-                    <div class="card-body text-center d-flex flex-column">
-                        <h5 class="fw-bold text-white mb-1">Meja {{ sprintf('%02d', $i) }}</h5>
-                        <p class="small text-secondary mb-3">Smoking Allowed</p>
-                        
-                        <button class="btn btn-outline-warning text-white w-100 mt-auto rounded-pill fw-bold"
-                            onclick="pilihMeja({{ $i }})">
-                            <i class="bi bi-bookmark-star me-1"></i> Booking VIP
-                        </button>
-                    </div>
-                </div>
+    @for ($i = 1; $i <= 8; $i++)
+        @php
+            // RUMUS RAHASIA: 
+            // Angka 1 jadi 13, Angka 2 jadi 14, dst.
+            // Ini supaya Database membaca ini sebagai VIP SMOKING
+            $id_asli_database = $i + 12; 
+        @endphp
+
+    <div class="col-md-3 col-6">
+        <div class="card card-meja rounded-4 overflow-hidden h-100">
+            <div class="position-relative">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKtheZXZUbNXYtanyqZxyM9Pui5Bdu5EyPvg&s" class="card-img-top w-100">
+                <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2 shadow fw-bold">VIP</span>
             </div>
-            @endfor
+            
+            <div class="card-body text-center d-flex flex-column">
+                {{-- TAMPILAN: Tetap Meja 1, 2, 3... (Sesuai maumu) --}}
+                <h5 class="fw-bold text-white mb-1">Meja {{ $i }}</h5>
+                <p class="small text-secondary mb-3">Smoking Allowed</p>
+                
+                {{-- TOMBOL: Saat diklik, kirim ID 13, 14, 15... (Biar harga 40rb) --}}
+                <button class="btn btn-outline-warning text-white w-100 mt-auto rounded-pill fw-bold"
+                    onclick="pilihMeja({{ $id_asli_database }})">
+                    <i class="bi bi-bookmark-star me-1"></i> Booking VIP
+                </button>
+            </div>
         </div>
+    </div>
+    @endfor
+</div>
 
         <div class="card mt-5 rounded-4 glass-card d-none" id="bookingCard">
             <div class="card-body p-4 p-md-5">

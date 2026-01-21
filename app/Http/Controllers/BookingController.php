@@ -93,20 +93,19 @@ class BookingController extends Controller
         $hargaPerJam = 25000;
         $tipeRuangan = 'Reguler Area';
         $warnaTeks   = 'text-success'; 
-        // ID Paket untuk disimpan ke DB 
         $idPaket     = 1; 
 
         if (str_contains($urlAsal, 'vip-non-smoking')) {
             $hargaPerJam = 40000;
             $tipeRuangan = 'VIP Non-Smoking';
             $warnaTeks   = 'text-info';
-            $idPaket     = 3; // Asumsi ID 3 di tabel paketharga
+            $idPaket     = 3; 
         } 
         elseif (str_contains($urlAsal, 'vip-smoking') || str_contains($urlAsal, 'vip')) {
             $hargaPerJam = 40000;
             $tipeRuangan = 'VIP Smoking';
             $warnaTeks   = 'text-warning';
-            $idPaket     = 2; // Asumsi ID 2 di tabel paketharga
+            $idPaket     = 2; 
         }
 
         $durasi = $request->jam_selesai - $request->jam_mulai;
@@ -117,8 +116,6 @@ class BookingController extends Controller
 
         $totalHarga = $durasi * $hargaPerJam;
 
-        // Ambil ID Meja berdasarkan Nomor Meja yang dipilih
-        // (Karena di form cuma kirim nomor meja, butuh ID aslinya untuk relasi DB)
         $dataMejaDB = Meja::where('nomor_meja', $request->meja)->first();
 
         return view('pembayaran', [
@@ -136,52 +133,59 @@ class BookingController extends Controller
         ]);
     }
 
-    /**
-     * UPDATE 2: MENYIMPAN DATA KE DATABASE
-     */
     public function konfirmasiPembayaran(Request $request)
     {
-        // 1. Validasi
         $request->validate([
-            'id_meja' => 'required',
-            'id_paket' => 'required',
+            'id_meja'           => 'required',
             'tanggal_reservasi' => 'required',
-            'total_bayar' => 'required',
-            'metode_pembayaran' => 'required',
-            'jam_mulai' => 'required',
-            'jam_selesai' => 'required'
+            'jam_mulai'         => 'required',
+            'jam_selesai'       => 'required',
+            'metode_pembayaran' => 'required'
         ]);
 
-        // 2. Gunakan Transaksi Database
-        // Supaya kalau Detail gagal disimpan, Reservasi induk juga batal
-        DB::transaction(function () use ($request) {
-            
-            // A. Simpan Reservasi (Induk)
-            // Ditampung ke variabel $reservasiBaru agar kita bisa ambil ID-nya
-            $reservasiBaru = Reservasi::create([
-                'id_pengguna' => Auth::id(),
-                'id_meja' => $request->id_meja,
-                'id_paket' => $request->id_paket,
+        $meja = Meja::find($request->id_meja);
+        
+        if (!$meja) {
+            return redirect()->back()->with('error', 'Meja tidak ditemukan!');
+        }
+
+        $hargaPerJam = 25000; 
+        $idPaket     = 1;     
+
+        if ($meja->id_kategori == 2) { 
+            $hargaPerJam = 40000; $idPaket = 2;
+        } elseif ($meja->id_kategori == 3) {
+            $hargaPerJam = 40000; $idPaket = 3; 
+        }
+
+        $durasi = (int)$request->jam_selesai - (int)$request->jam_mulai;
+        if ($durasi < 1) $durasi = 1;
+        
+        $totalBayarFix = $durasi * $hargaPerJam;
+
+        DB::transaction(function () use ($request, $totalBayarFix, $idPaket) {
+
+            $reservasi = Reservasi::create([
+                'id_pengguna'       => Auth::id(),
+                'id_meja'           => $request->id_meja,
+                'id_paket'          => $idPaket,
                 'tanggal_reservasi' => $request->tanggal_reservasi,
-                'jam_mulai' => $request->jam_mulai . ':00:00',   
-                'jam_selesai' => $request->jam_selesai . ':00:00',
-                'total_bayar' => $request->total_bayar,
-                'metode_pembayaran' => $request->metode_pembayaran
+                'jam_mulai'         => $request->jam_mulai . ':00:00',
+                'jam_selesai'       => $request->jam_selesai . ':00:00',
+                'total_bayar'       => $totalBayarFix, 
+                'metode_pembayaran' => $request->metode_pembayaran,
+                'status'            => 'pending'
             ]);
 
-            // B. Simpan Detail Reservasi
-            // Menggunakan ID dari reservasi yang baru dibuat di atas
             DetailReservasi::create([
-                'id_reservasi' => $reservasiBaru->id_reservasi, 
-                'id_meja' => $request->id_meja,
-                'jam_mulai' => $request->jam_mulai . ':00:00',
-                'jam_selesai' => $request->jam_selesai . ':00:00',
+                'id_reservasi' => $reservasi->id_reservasi,
+                'id_meja'      => $request->id_meja,
+                'jam_mulai'    => $request->jam_mulai . ':00:00',
+                'jam_selesai'  => $request->jam_selesai . ':00:00',
             ]);
+
         });
 
-        // 3. Redirect
-        // Ambil nomor meja untuk pesan sukses 
-        return redirect('/dashboard')
-            ->with('success', 'Pembayaran berhasil! Booking tercatat.');
+        return redirect('/dashboard')->with('success', 'Booking Berhasil! Selamat bermain.');
     }
 }
