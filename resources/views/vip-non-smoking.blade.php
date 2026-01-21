@@ -10,13 +10,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
-        /* BACKGROUND SOLID GELAP PREMIUM */
         body {
             background-color: #0a0e17;
             min-height: 100vh;
         }
 
-        /* Styling Card Meja */
         .card-meja {
             transition: transform 0.3s, box-shadow 0.3s;
             background: rgba(33, 37, 41, 0.8);
@@ -25,7 +23,6 @@
 
         .card-meja:hover {
             transform: translateY(-10px);
-            /* Glow warna Cyan/Biru Muda untuk kesan Sejuk/Non-Smoking */
             box-shadow: 0 10px 20px rgba(13, 202, 240, 0.2); 
             border-color: #0dcaf0;
         }
@@ -36,7 +33,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Styling Form Booking */
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -109,7 +105,7 @@
                                 <label class="form-label text-secondary small text-uppercase fw-bold">Tanggal Reservasi</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-calendar-event"></i></span>
-                                    <input type="date" name="tanggal_reservasi" class="form-control bg-dark border-secondary text-white focus-ring focus-ring-info"
+                                    <input type="date" id="inputTanggal" name="tanggal_reservasi" class="form-control bg-dark border-secondary text-white focus-ring focus-ring-info"
                                         required min="{{ now()->toDateString() }}">
                                 </div>
                             </div>
@@ -160,48 +156,97 @@
     </footer>
 
     <script>
-        // HARGA VIP Rp 40.000
-        const hargaPerJam = 40000;
+    const hargaPerJam = 40000; 
 
-        function pilihMeja(no) {
-            console.log('Meja VIP Non-Smoking dipilih:', no);
+    // Ambil elemen-elemen penting
+    const inputTanggal = document.getElementById('inputTanggal');
+    const inputJamMulai = document.getElementById('startHour');
+    const inputMeja = document.getElementById('mejaInput');
 
-            const bookingCard = document.getElementById('bookingCard');
-            bookingCard.classList.remove('d-none');
-            
-            // Format nomor meja dengan 0 di depan (01, 02)
-            let formattedNo = no.toString().padStart(2, '0');
-            document.getElementById('mejaText').innerText = formattedNo; 
-            
-            document.getElementById('mejaInput').value = no;
+    function pilihMeja(no) {
+        console.log('Meja VIP Non-Smoking dipilih:', no);
 
-            // Auto scroll ke form
-            bookingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const bookingCard = document.getElementById('bookingCard');
+        bookingCard.classList.remove('d-none');
+        
+        let formattedNo = no.toString().padStart(2, '0');
+        document.getElementById('mejaText').innerText = formattedNo; 
+        
+        document.getElementById('mejaInput').value = no;
 
-            calculateTotal();
+        bookingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        calculateTotal();
+
+        // Langsung cek ketersediaan (jika tanggal sudah terisi sebelumnya)
+        cekKetersediaan();
+    }
+
+    // 2. Event Listener: Saat Tanggal Diubah -> Cek Database
+    if (inputTanggal) {
+        inputTanggal.addEventListener('change', cekKetersediaan);
+    }
+
+    // 3. Fungsi Utama: Cek Jam Sibuk via AJAX
+    function cekKetersediaan() {
+        const tanggal = inputTanggal.value;
+        const idMeja = inputMeja.value;
+
+        // Reset dropdown (nyalakan semua dulu)
+        const opsiJam = inputJamMulai.querySelectorAll('option');
+        opsiJam.forEach(opt => {
+            opt.disabled = false;
+            opt.innerText = opt.value + ":00 WIB";
+            opt.style.color = ""; 
+        });
+
+        // Jangan lanjut kalau data belum lengkap
+        if (!tanggal || !idMeja) return;
+
+        // Panggil Controller Laravel
+        fetch(`/cek-ketersediaan?id_meja=${idMeja}&tanggal=${tanggal}`)
+            .then(response => response.json())
+            .then(jamSibuk => {
+                console.log("Jam Terpakai:", jamSibuk);
+
+                // Loop semua opsi jam di dropdown
+                opsiJam.forEach(opt => {
+                    const jam = parseInt(opt.value);
+
+                    // Jika jam ini ada di daftar sibuk
+                    if (jamSibuk.includes(jam)) {
+                        opt.disabled = true; 
+                        opt.innerText = jam + ":00 (Penuh)";
+                        opt.style.color = "#dc3545"; 
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // 4. Hitung Total Harga
+    function calculateTotal() {
+        let start = parseInt(document.getElementById('startHour').value);
+        let end = parseInt(document.getElementById('endHour').value);
+        let output = document.getElementById('totalPrice');
+
+        let durasi = end - start;
+
+        // Validasi Jam
+        if (durasi <= 0) {
+            output.value = 'Jam Invalid';
+            output.classList.remove('text-info');
+            output.classList.add('text-danger');
+            return;
         }
 
-        function calculateTotal() {
-            let start = parseInt(document.getElementById('startHour').value);
-            let end = parseInt(document.getElementById('endHour').value);
+        output.classList.remove('text-danger');
+        output.classList.add('text-info'); 
 
-            let durasi = end - start;
-            let output = document.getElementById('totalPrice');
-
-            if (durasi <= 0) {
-                output.value = 'Jam Invalid';
-                output.classList.remove('text-info');
-                output.classList.add('text-danger');
-                return;
-            }
-
-            output.classList.remove('text-danger');
-            output.classList.add('text-info');
-
-            let total = durasi * hargaPerJam;
-            output.value = 'Rp ' + total.toLocaleString('id-ID');
-        }
-    </script>
+        let total = durasi * hargaPerJam;
+        output.value = 'Rp ' + total.toLocaleString('id-ID');
+    }
+</script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

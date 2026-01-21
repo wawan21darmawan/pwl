@@ -14,11 +14,11 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        // 1. Validasi Input (Wajibkan no_telp juga)
+        // 1. Validasi Input 
         $credentials = $request->validate([
             'username' => ['required'],
             'password' => ['required'],
-            'no_telp'  => ['required'], // Tambahkan validasi ini
+            'no_telp'  => ['required'], 
         ]);
 
         // 2. Coba Login dengan 3 data sekaligus

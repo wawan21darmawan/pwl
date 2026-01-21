@@ -10,15 +10,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
-        /* Custom Background Image */
         body {
-            /* Gambar background suasana billiard gelap */
             background: url('https://images.unsplash.com/photo-1542380482-3590d9845862?q=80&w=2000&auto=format&fit=crop') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
         }
 
-        /* Overlay Hitam Transparan */
         body::before {
             content: "";
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -26,7 +23,6 @@
             z-index: -1;
         }
 
-        /* Styling Card Meja */
         .card-meja {
             transition: transform 0.3s, box-shadow 0.3s;
             background: rgba(33, 37, 41, 0.8);
@@ -46,7 +42,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Styling Form Booking (Glass Effect) */
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -120,7 +115,7 @@
                                 <label class="form-label text-secondary small text-uppercase fw-bold">Tanggal Reservasi</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-calendar-event"></i></span>
-                                    <input type="date" name="tanggal_reservasi" class="form-control bg-dark border-secondary text-white focus-ring focus-ring-primary"
+                                    <input type="date" id="inputTanggal" name="tanggal_reservasi" class="form-control bg-dark border-secondary text-white focus-ring focus-ring-primary"
                                         required min="{{ now()->toDateString() }}">
                                 </div>
                             </div>
@@ -171,45 +166,95 @@
     </footer>
 
     <script>
-        const hargaPerJam = 25000;
+    const hargaPerJam = 25000;
+    
+    // Ambil elemen-elemen penting
+    const inputTanggal = document.getElementById('inputTanggal');
+    const inputJamMulai = document.getElementById('startHour');
+    const inputMeja = document.getElementById('mejaInput');
 
-        function pilihMeja(no) {
-            console.log('Meja dipilih:', no);
+    function pilihMeja(no) {
+        console.log('Meja dipilih:', no);
 
-            const bookingCard = document.getElementById('bookingCard');
-            bookingCard.classList.remove('d-none');
-            
-            // PERBAIKAN DI SINI: Menggunakan padStart agar 0 hanya muncul jika angka < 10
-            let formattedNo = no.toString().padStart(2, '0');
-            document.getElementById('mejaText').innerText = formattedNo; 
-            
-            document.getElementById('mejaInput').value = no;
+        const bookingCard = document.getElementById('bookingCard');
+        bookingCard.classList.remove('d-none');
+        
+        let formattedNo = no.toString().padStart(2, '0');
+        document.getElementById('mejaText').innerText = formattedNo; 
+        
+        // Isi input hidden ID Meja
+        inputMeja.value = no;
 
-            bookingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        bookingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-            calculateTotal();
+        calculateTotal();
+        
+        // Cek ketersediaan (siapa tahu user sudah isi tanggal sebelumnya)
+        cekKetersediaan(); 
+    }
+
+    // 2. Event Listener: Saat Tanggal Diubah -> Cek Database
+    inputTanggal.addEventListener('change', cekKetersediaan);
+
+    // 3. Fungsi Utama: Cek Jam Sibuk via AJAX
+    function cekKetersediaan() {
+        const tanggal = inputTanggal.value;
+        const idMeja = inputMeja.value;
+
+        // Reset dropdown (nyalakan semua dulu)
+        const opsiJam = inputJamMulai.querySelectorAll('option');
+        opsiJam.forEach(opt => {
+            opt.disabled = false;
+            opt.innerText = opt.value + ":00 WIB";
+            opt.style.color = ""; 
+        });
+
+        // Jangan lanjut kalau data belum lengkap
+        if (!tanggal || !idMeja) return;
+
+        // Panggil Controller Laravel
+        fetch(`/cek-ketersediaan?id_meja=${idMeja}&tanggal=${tanggal}`)
+            .then(response => response.json())
+            .then(jamSibuk => {
+                console.log("Jam Terpakai:", jamSibuk);
+
+                // Loop semua opsi jam di dropdown
+                opsiJam.forEach(opt => {
+                    const jam = parseInt(opt.value);
+
+                    // Jika jam ini ada di daftar sibuk
+                    if (jamSibuk.includes(jam)) {
+                        opt.disabled = true; 
+                        opt.innerText = jam + ":00 (Penuh)"; 
+                        opt.style.color = "#dc3545"; 
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // 4. Hitung Total Harga
+    function calculateTotal() {
+        let start = parseInt(document.getElementById('startHour').value);
+        let end = parseInt(document.getElementById('endHour').value);
+        let output = document.getElementById('totalPrice');
+
+        // Validasi jam
+        if (end <= start) {
+            output.value = 'Jam Invalid';
+            output.classList.remove('text-success');
+            output.classList.add('text-danger');
+            return;
         }
 
-        function calculateTotal() {
-            let start = parseInt(document.getElementById('startHour').value);
-            let end = parseInt(document.getElementById('endHour').value);
+        let durasi = end - start;
 
-            let durasi = end - start;
-            let output = document.getElementById('totalPrice');
+        output.classList.remove('text-danger');
+        output.classList.add('text-success');
 
-            if (durasi <= 0) {
-                output.value = 'Jam Invalid';
-                output.classList.remove('text-success');
-                output.classList.add('text-danger');
-                return;
-            }
-
-            output.classList.remove('text-danger');
-            output.classList.add('text-success');
-
-            let total = durasi * hargaPerJam;
-            output.value = 'Rp ' + total.toLocaleString('id-ID');
-        }
+        let total = durasi * hargaPerJam;
+        output.value = 'Rp ' + total.toLocaleString('id-ID');
+    }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

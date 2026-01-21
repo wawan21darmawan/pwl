@@ -9,7 +9,6 @@ class Meja extends Model
 {
     use HasFactory;
 
-    // Menyesuaikan dengan nama tabel di SQL kamu
     protected $table = 'meja';
     protected $primaryKey = 'id_meja';
     public $timestamps = false; // Karena di SQL tidak ada created_at/updated_at

@@ -46,7 +46,6 @@
                             <p class="text-white-50 small">Member Login</p>
                         </div>
 
-                        {{-- Menampilkan Pesan Error --}}
                         @if ($errors->any())
                             <div class="alert alert-danger py-2 small">
                                 <ul class="mb-0 ps-3">
@@ -60,19 +59,16 @@
                         <form method="POST" action="{{ route('login') }}">
                             @csrf
                             
-                            {{-- Input Username --}}
                             <div class="form-floating mb-3">
                                 <input type="text" name="username" class="form-control bg-dark text-white border-secondary" id="username" placeholder="Username" required autofocus>
                                 <label class="text-secondary" for="username">Username</label>
                             </div>
 
-                            {{-- Input Password --}}
                             <div class="form-floating mb-3">
                                 <input type="password" name="password" class="form-control bg-dark text-white border-secondary" id="password" placeholder="Password" required>
                                 <label class="text-secondary" for="password">Password</label>
                             </div>
 
-                            {{-- Input No Telp (DIKEMBALIKAN) --}}
                             <div class="form-floating mb-4">
                                 <input type="text" name="no_telp" class="form-control bg-dark text-white border-secondary" id="no_telp" placeholder="08xxx" required>
                                 <label class="text-secondary" for="no_telp">No. Telepon</label>

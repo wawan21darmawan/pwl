@@ -20,20 +20,15 @@
         }
         .card-img-top { height: 200px; object-fit: cover; }
 
-        /* === TAMBAHAN CSS BARU UNTUK ANIMASI HOVER === */
         .card-hover {
-            /* Membuat transisi halus selama 0.3 detik */
+            /* Membuat transisi halus */
             transition: all 0.3s ease-in-out;
         }
         .card-hover:hover {
-            /* Mengangkat kartu ke atas sebanyak 10px */
+            /* Mengangkat kartu ke atas */
             transform: translateY(-10px);
-            /* Mengubah warna border menjadi biru terang (primary) saat disentuh */
-            border-color: var(--bs-primary) !important; 
-            /* Menambah intensitas bayangan (opsional, shadow bawaan bootstrap sudah cukup bagus) */
-            /* box-shadow: 0 1rem 3rem rgba(0,0,0,.5) !important; */
+            border-color: var(--bs-primary) !important;  
         }
-        /* ============================================ */
 
     </style>
 </head>

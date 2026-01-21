@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Meja; // Panggil Model Meja yang baru dibuat
+use App\Models\Meja; 
 
 class DashboardController extends Controller
 {
+    
     public function index()
     {
         return view('dashboard');
     }
 
-    // Fungsi untuk Halaman Reguler
     public function reguler()
     {
         // Ambil data meja yang kategori ID-nya 1 (Reguler)
@@ -20,7 +20,6 @@ class DashboardController extends Controller
         return view('reguler', compact('meja'));
     }
 
-    // Fungsi untuk Halaman VIP Smoking
     public function vipSmoking()
     {
         // Ambil data meja yang kategori ID-nya 2 (VIP Smoking)
@@ -28,7 +27,6 @@ class DashboardController extends Controller
         return view('vip-smoking', compact('meja'));
     }
 
-    // Fungsi untuk Halaman VIP Non-Smoking
     public function vipNonSmoking()
     {
         // Ambil data meja yang kategori ID-nya 3 (VIP Non-Smoking)

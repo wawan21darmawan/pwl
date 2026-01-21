@@ -58,11 +58,8 @@
                             </li>
                         </ul>
 
-                        {{-- FORM UPDATE: Menambahkan Hidden Input & Pilihan Metode Pembayaran --}}
                         <form action="{{ route('pembayaran.konfirmasi') }}" method="POST">
                             @csrf
-                            
-                            {{-- PENTING: Data Hidden ini akan dikirim ke Database --}}
                             <input type="hidden" name="id_meja" value="{{ $id_meja_asli }}">
                             <input type="hidden" name="id_paket" value="{{ $id_paket }}">
                             <input type="hidden" name="tanggal_reservasi" value="{{ $tanggal_reservasi }}">
@@ -70,7 +67,6 @@
                             <input type="hidden" name="jam_selesai" value="{{ $jam_selesai }}">
                             <input type="hidden" name="total_bayar" value="{{ $totalHarga }}">
 
-                            {{-- Pilihan Metode Pembayaran (Sesuai Enum Database) --}}
                             <div class="mb-3 text-start">
                                 <label class="text-secondary small ms-2 mb-1">Konfirmasi Metode Pembayaran</label>
                                 <select name="metode_pembayaran" class="form-select bg-dark text-white border-secondary rounded-pill mb-3">
