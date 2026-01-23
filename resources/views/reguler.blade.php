@@ -168,7 +168,6 @@
     <script>
     const hargaPerJam = 25000;
     
-    // Ambil elemen-elemen penting
     const inputTanggal = document.getElementById('inputTanggal');
     const inputJamMulai = document.getElementById('startHour');
     const inputMeja = document.getElementById('mejaInput');
@@ -182,26 +181,23 @@
         let formattedNo = no.toString().padStart(2, '0');
         document.getElementById('mejaText').innerText = formattedNo; 
         
-        // Isi input hidden ID Meja
         inputMeja.value = no;
 
         bookingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         calculateTotal();
-        
-        // Cek ketersediaan (siapa tahu user sudah isi tanggal sebelumnya)
+    
         cekKetersediaan(); 
     }
 
-    // 2. Event Listener: Saat Tanggal Diubah -> Cek Database
     inputTanggal.addEventListener('change', cekKetersediaan);
 
-    // 3. Fungsi Utama: Cek Jam Sibuk via AJAX
+    // Cek Jam Sibuk via AJAX
     function cekKetersediaan() {
         const tanggal = inputTanggal.value;
         const idMeja = inputMeja.value;
 
-        // Reset dropdown (nyalakan semua dulu)
+        // Reset dropdown 
         const opsiJam = inputJamMulai.querySelectorAll('option');
         opsiJam.forEach(opt => {
             opt.disabled = false;
@@ -209,10 +205,8 @@
             opt.style.color = ""; 
         });
 
-        // Jangan lanjut kalau data belum lengkap
         if (!tanggal || !idMeja) return;
 
-        // Panggil Controller Laravel
         fetch(`/cek-ketersediaan?id_meja=${idMeja}&tanggal=${tanggal}`)
             .then(response => response.json())
             .then(jamSibuk => {
@@ -222,7 +216,7 @@
                 opsiJam.forEach(opt => {
                     const jam = parseInt(opt.value);
 
-                    // Jika jam ini ada di daftar sibuk
+                    // Tampilan saat jam penuh
                     if (jamSibuk.includes(jam)) {
                         opt.disabled = true; 
                         opt.innerText = jam + ":00 (Penuh)"; 
@@ -233,7 +227,7 @@
             .catch(error => console.error('Error:', error));
     }
 
-    // 4. Hitung Total Harga
+    // Hitung Total Harga
     function calculateTotal() {
         let start = parseInt(document.getElementById('startHour').value);
         let end = parseInt(document.getElementById('endHour').value);

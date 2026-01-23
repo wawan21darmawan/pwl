@@ -11,8 +11,7 @@ class User extends Authenticatable
 
     protected $table = 'pengguna';    
     protected $primaryKey = 'id_pengguna';
-    public $timestamps = false;         // Karena di tabel pengguna tidak ada created_at & updated_at
-
+    public $timestamps = false;        
     protected $fillable = [
         'username', 
         'password',

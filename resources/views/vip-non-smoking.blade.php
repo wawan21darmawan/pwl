@@ -75,11 +75,9 @@
             </div>
             
             <div class="card-body text-center d-flex flex-column">
-                {{-- TAMPILAN: Tetap Meja 1, 2, 3... --}}
                 <h5 class="fw-bold text-white mb-1">Meja {{ $i }}</h5>
                 <p class="small text-secondary mb-3">Non-Smoking</p>
-                
-                {{-- TOMBOL: Kirim ID 21, 22... ke server --}}
+
                 <button class="btn btn-outline-info text-white w-100 mt-auto rounded-pill fw-bold"
                     onclick="pilihMeja({{ $id_asli_database }})">
                     <i class="bi bi-bookmark-check me-1"></i> Booking VIP
@@ -164,7 +162,6 @@
     <script>
     const hargaPerJam = 40000; 
 
-    // Ambil elemen-elemen penting
     const inputTanggal = document.getElementById('inputTanggal');
     const inputJamMulai = document.getElementById('startHour');
     const inputMeja = document.getElementById('mejaInput');
@@ -184,21 +181,19 @@
 
         calculateTotal();
 
-        // Langsung cek ketersediaan (jika tanggal sudah terisi sebelumnya)
         cekKetersediaan();
     }
 
-    // 2. Event Listener: Saat Tanggal Diubah -> Cek Database
     if (inputTanggal) {
         inputTanggal.addEventListener('change', cekKetersediaan);
     }
 
-    // 3. Fungsi Utama: Cek Jam Sibuk via AJAX
+    // Cek Jam Sibuk via AJAX
     function cekKetersediaan() {
         const tanggal = inputTanggal.value;
         const idMeja = inputMeja.value;
 
-        // Reset dropdown (nyalakan semua dulu)
+        // Reset dropdown 
         const opsiJam = inputJamMulai.querySelectorAll('option');
         opsiJam.forEach(opt => {
             opt.disabled = false;
@@ -206,10 +201,8 @@
             opt.style.color = ""; 
         });
 
-        // Jangan lanjut kalau data belum lengkap
         if (!tanggal || !idMeja) return;
 
-        // Panggil Controller Laravel
         fetch(`/cek-ketersediaan?id_meja=${idMeja}&tanggal=${tanggal}`)
             .then(response => response.json())
             .then(jamSibuk => {
@@ -219,7 +212,7 @@
                 opsiJam.forEach(opt => {
                     const jam = parseInt(opt.value);
 
-                    // Jika jam ini ada di daftar sibuk
+                    // Tampilan saat jam penuh
                     if (jamSibuk.includes(jam)) {
                         opt.disabled = true; 
                         opt.innerText = jam + ":00 (Penuh)";
@@ -230,7 +223,7 @@
             .catch(error => console.error('Error:', error));
     }
 
-    // 4. Hitung Total Harga
+    // Hitung Total Harga
     function calculateTotal() {
         let start = parseInt(document.getElementById('startHour').value);
         let end = parseInt(document.getElementById('endHour').value);

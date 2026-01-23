@@ -3,22 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;  // untuk ambil ID user yang login
+use Illuminate\Support\Facades\Auth;  
 use Illuminate\Support\Facades\DB;
 use App\Models\Meja;       
 use App\Models\Reservasi;  
 use App\Models\DetailReservasi; 
 class BookingController extends Controller
 {
-    /**
-     * Menampilkan halaman Regular (Mengambil data dari DB)
-     */
     public function reguler()
     {
-        // UPDATE 1: Ambil data meja kategori 1 (Reguler) dari Database
+        // UPDATE 1: Ambil data meja kategori 1 (Reguler) 
         $meja = Meja::where('id_kategori', 1)->get();
-        
-        // Kirim variable $meja ke view agar bisa di-looping
         return view('reguler', compact('meja'));
     }
 
@@ -69,7 +64,7 @@ class BookingController extends Controller
             }
         }
         
-        // Urutkan jam biar rapi (opsional)
+        // Urutkan jam biar rapi
         sort($jamSibuk);
 
         return response()->json($jamSibuk);
@@ -86,8 +81,6 @@ class BookingController extends Controller
             'jam_selesai' => 'required|integer',
             'tanggal_reservasi' => 'required|date',
         ]);
-
-        // Deteksi URL 
         $urlAsal = url()->previous(); 
         
         $hargaPerJam = 25000;

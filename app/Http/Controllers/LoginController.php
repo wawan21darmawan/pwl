@@ -14,15 +14,14 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        // 1. Validasi Input 
+        // Validasi Input 
         $credentials = $request->validate([
             'username' => ['required'],
             'password' => ['required'],
             'no_telp'  => ['required'], 
         ]);
 
-        // 2. Coba Login dengan 3 data sekaligus
-        // Auth::attempt akan mencocokkan semua key array di atas dengan kolom database
+        // Login dengan 3 data sekaligus
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->intended('dashboard');

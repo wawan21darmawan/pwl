@@ -43,17 +43,12 @@
                                         {{ date('d M Y', strtotime($res->tanggal_reservasi)) }}
                                     </td>
                                     <td class="fw-bold">{{ $res->user->username ?? 'User Dihapus' }}</td>
-
-                                    {{-- Loop Detail Meja --}}
                                     <td>
                                         @foreach($res->details as $detail)
                                             <div class="mb-1">
-                                                {{-- Nama Meja (Contoh: Meja 1) --}}
                                                 <span class="fw-bold">
                                                     Meja {{ $detail->meja->nomor_meja ?? '?' }}
                                                 </span>
-
-                                                {{-- Kategori Meja (Contoh: VIP Smoking) --}}
                                                 <br>
                                                 <small class="badge bg-light text-secondary border">
                                                     {{ $detail->meja->kategori->nama_kategori ?? 'Umum' }}
@@ -62,7 +57,6 @@
                                         @endforeach
                                     </td>
 
-                                    {{-- Loop Jam Main --}}
                                     <td>
                                         @foreach($res->details as $detail)
                                             {{ substr($detail->jam_mulai, 0, 5) }} - {{ substr($detail->jam_selesai, 0, 5) }}
